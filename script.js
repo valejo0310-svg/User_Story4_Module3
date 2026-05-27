@@ -1,3 +1,8 @@
+/**
+ * Variables declaration
+ */
+
+
 const btn = document.getElementById("btn")
 const list = document.getElementById("list")
 const message = document.getElementById("message")
@@ -6,12 +11,23 @@ const productInput = document.getElementById("product");
 const priceInput = document.getElementById("price");
 const descriptionInput = document.getElementById("description");
 
-const URL = "http://localhost:3000/Products"
+const URLAPI = "http://localhost:3000/products" //Url variable to store on the fake API
 
+    document.addEventListener("DOMContentLoaded", ()=>{
+        // Primero pinta lo guardado en localStorage
+        const savedProducts = JSON.parse(localStorage.getItem("products")) || [];
+        savedProducts.forEach(item => {
+            renderHTML(item.product, item.price, item.description);
+        });
 
-function validations() {
+        // Luego trae lo de la API
+        getProducts(URLAPI, list)
+    }) //Function to make sure the shows after the DOM has loaded
 
-    btn.addEventListener("click", (e) => {
+/**
+ * Added event to the button to make all the validations
+ */
+btn.addEventListener("click", (e) => {
         e.preventDefault()
 
         const product = productInput.value.trim();
@@ -50,47 +66,62 @@ function validations() {
     descriptionInput.value = "";
         }
     
-    )}
+    )
 
-
-
-
-    function renderHTML (product,price,description) {
+async function getProducts(Url, list) {
+    try {
+        const res = await axios.get(Url)
+        const data = res.data
+        for (const product of data) {
+            renderHTML(product.product_name, product.product_price, product.description)
+        }
+    } catch (error) {
+        console.error("Yaper eso no cargo", error)
+        const errorMsg = document.createElement("li")
+        errorMsg.textContent = "Error cargando los productos"
+        list.appendChild(errorMsg)
+    }
+}
+function renderHTML (product,price,description) {
 
     let newElement = document.createElement ("li")
-
     let btnDelete = document.createElement ("button")
-
     btnDelete.textContent = "delete"
     newElement.innerHTML += `
     <br> Product: ${product} <br>  
     Price: ${price} <br> 
     Description: ${description}`
 
-    btnDelete.addEventListener("click",() =>{
-        newElement.remove()
-        let products = JSON.parse(localStorage.getItem("products")) || [];
-
-        products = products.filter(item =>
-            item.product !== product ||
-            item.price !== price ||
-            item.description !== description
-        );
-        localStorage.setItem("products", JSON.stringify(products));
-    })
+    deleteData(newElement, btnDelete, product, price, description)
 
     list.appendChild(newElement)
     newElement.appendChild(btnDelete)
+}
+function deleteData (newElement, btnDelete, product, price, description){
+    
+    btnDelete.addEventListener("click", () =>{
+        // Quita el elemento de la pantalla
+        newElement.remove()
 
+        // Lee los productos guardados
+        let products = JSON.parse(localStorage.getItem("products")) || [];
+
+        // Elimina SOLO la primera coincidencia exacta de los 3 campos
+        const index = products.findIndex(item =>
+            item.product === product &&
+            item.price === price &&
+            item.description === description
+        );
+
+        if (index !== -1) {
+            products.splice(index, 1);
+        }
+
+        // Vuelve a guardar la lista actualizada
+        localStorage.setItem("products", JSON.stringify(products));
+
+        console.log("Product deleted");
+    })
 }
 
 
-const savedProducts = JSON.parse(localStorage.getItem("products")) || [];
-
-savedProducts.forEach(item => {
-    renderHTML(item.product, item.price, item.description);
-});
-
-
-validations()
- 
