@@ -1,3 +1,19 @@
 {
-    "Products":[ ]
+  "products": [
+    {
+     "product_name": "Leche",
+      "product_price": 4500,
+      "description":"Lacteo refrescante"
+    },
+    {
+      "product_name": "huevos",
+      "product_price": 1000,
+      "description":"Pura proteina"
+    },
+    {
+      "product_name": "harina",
+      "product_price": 2500,
+      "description":"Pa los pudincitos"
+    }
+  ]
 }
