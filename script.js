@@ -1,8 +1,6 @@
 /**
  * Variables declaration
  */
-
-
 const btn = document.getElementById("btn")
 const list = document.getElementById("list")
 const message = document.getElementById("message")
@@ -14,20 +12,13 @@ const descriptionInput = document.getElementById("description");
 const URLAPI = "http://localhost:3000/products" //Url variable to store on the fake API
 
     document.addEventListener("DOMContentLoaded", ()=>{
-        // Primero pinta lo guardado en localStorage
-        const savedProducts = JSON.parse(localStorage.getItem("products")) || [];
-        savedProducts.forEach(item => {
-            renderHTML(item.product, item.price, item.description);
-        });
-
-        // Luego trae lo de la API
-        getProducts(URLAPI, list)
-    }) //Function to make sure the shows after the DOM has loaded
+        getProducts(URLAPI)
+    })
 
 /**
  * Added event to the button to make all the validations
  */
-btn.addEventListener("click", (e) => {
+btn.addEventListener("click", async (e) => {
         e.preventDefault()
 
         const product = productInput.value.trim();
@@ -46,35 +37,36 @@ btn.addEventListener("click", (e) => {
             
             return;
         }
-            message.textContent = "product added successfully "
-            message.style.color = "green"
 
-            renderHTML (product,price,description)
-            const productData = {
-            product ,
-            price,
-            description
-            };
-            
-             
-    const products = JSON.parse(localStorage.getItem("products")) || [];
-    products.push(productData);
-    localStorage.setItem("products", JSON.stringify(products));
-    
-    productInput.value = "";
-    priceInput.value = "";
-    descriptionInput.value = "";
-        }
-    
-    )
+          try {
+        // POST a la API: ella le asigna un id
+        const res = await axios.post(URLAPI, {
+            product_name: product,
+            product_price: price,
+            description: description
+        })
+
+        message.textContent = "product added successfully"
+        message.style.color = "green"
+
+        // Renderiza usando el objeto que devolvió la API (ya con id)
+        renderHTML(res.data)
+
+        productInput.value = "";
+        priceInput.value = "";
+        descriptionInput.value = "";
+    } catch (error) {
+        console.error("No se pudo guardar", error)
+        message.textContent = "Error guardando el producto"
+        message.style.color = "red";
+    }
+})
 
 async function getProducts(Url, list) {
     try {
         const res = await axios.get(Url)
-        const data = res.data
-        for (const product of data) {
-            renderHTML(product.product_name, product.product_price, product.description)
-        }
+        res.data.forEach(item => renderHTML(item))
+
     } catch (error) {
         console.error("Yaper eso no cargo", error)
         const errorMsg = document.createElement("li")
@@ -82,46 +74,30 @@ async function getProducts(Url, list) {
         list.appendChild(errorMsg)
     }
 }
-function renderHTML (product,price,description) {
+function renderHTML (item) {
 
     let newElement = document.createElement ("li")
     let btnDelete = document.createElement ("button")
     btnDelete.textContent = "delete"
-    newElement.innerHTML += `
-    <br> Product: ${product} <br>  
-    Price: ${price} <br> 
-    Description: ${description}`
 
-    deleteData(newElement, btnDelete, product, price, description)
+    newElement.innerHTML = `
+    <br> Product: ${item.product_name} <br>  
+    Price: ${item.price_price} <br> 
+    Description: ${item.description}`
 
-    list.appendChild(newElement)
-    newElement.appendChild(btnDelete)
-}
-function deleteData (newElement, btnDelete, product, price, description){
-    
-    btnDelete.addEventListener("click", () =>{
-        // Quita el elemento de la pantalla
-        newElement.remove()
-
-        // Lee los productos guardados
-        let products = JSON.parse(localStorage.getItem("products")) || [];
-
-        // Elimina SOLO la primera coincidencia exacta de los 3 campos
-        const index = products.findIndex(item =>
-            item.product === product &&
-            item.price === price &&
-            item.description === description
-        );
-
-        if (index !== -1) {
-            products.splice(index, 1);
+    btnDelete.addEventListener("click", async () => {
+        try {
+            await axios.delete(`${URLAPI}/${item.id}`)
+            newElement.remove()
+            console.log("Product deleted")
+        } catch (error) {
+            console.error("No se pudo eliminar", error)
         }
-
-        // Vuelve a guardar la lista actualizada
-        localStorage.setItem("products", JSON.stringify(products));
-
-        console.log("Product deleted");
     })
+
+    newElement.appendChild(btnDelete)
+    list.appendChild(newElement)
 }
+
 
 
