@@ -1,0 +1,29 @@
+# Dependencias de Node (¡Crucial si usas npm!)
+node_modules/
+jspm_packages/
+web_modules/
+
+# Variables de entorno / Datos sensibles (Claves de API, contraseñas)
+.env
+.env.local
+.env.*.local
+*.env
+
+# Carpetas de configuración del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Configuración de editores de código
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Carpetas de producción / compilación (Opcional, si usas builders como Vite, Webpack o Parcel)
+dist/
+build/
+out/
+.next/
