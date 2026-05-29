@@ -1,19 +1,29 @@
 {
   "products": [
     {
-     "product_name": "Leche",
+      "product_name": "Leche",
       "product_price": 4500,
-      "description":"Lacteo refrescante"
+      "description": "Lacteo refrescante",
+      "id": "xN-Y2sYrdyo"
     },
     {
       "product_name": "huevos",
       "product_price": 1000,
-      "description":"Pura proteina"
+      "description": "Pura proteina",
+      "id": "RKrMt0T-rIk"
     },
     {
       "product_name": "harina",
       "product_price": 2500,
-      "description":"Pa los pudincitos"
+      "description": "Pa los pudincitos",
+      "id": "bCQ4L0Ajh2Q"
+    },
+    {
+      "product_name": "coco",
+      "product_price": "2000",
+      "description": "coquito coquito",
+      "id": "bs9kTMCOukI"
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }

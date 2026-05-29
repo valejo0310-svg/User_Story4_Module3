@@ -151,6 +151,7 @@ async function getProducts(url) {
 function renderHTML(item) {
     const newElement = document.createElement("li");
     const btnDelete = document.createElement("button");
+    btnDelete.classList.add("btn","btn-outline-info","mt-2", "d-block")
 
     btnDelete.textContent = "delete";
 
